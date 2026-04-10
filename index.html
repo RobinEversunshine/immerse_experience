@@ -1,104 +1,427 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACT Academy UI Mockup</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
 
-    <div class="device-container">
-        <div class="iphone-mockup">
-            <div class="screen">
-                <header>
-                    <span class="icon">☰</span>
-                    <h1>Lesson Hub</h1>
-                    <span class="icon">⚙️</span>
-                </header>
-                
-                <div class="content">
-                    <div class="progress-circle">
-                        <div class="circle-inner">
-                            <span class="number">135</span>
-                            <span class="sub">lesson</span>
-                        </div>
-                    </div>
-                    <p class="label">Tracker progress</p>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--teal:#2A9D8F;--teal-d:#1E7268;--teal-l:#A8DEDD;--teal-bg:#E8F7F6;--gold:#E9C46A;--navy:#264653;--text:#1A2E2B;--muted:#7A9E9B;--border:#D2EEEC;}
+  body{font-family:'DM Sans',sans-serif;background:transparent;display:flex;flex-direction:column;align-items:center;padding:24px 0 40px;}
+  .screen-label{font-size:12px;color:var(--muted);letter-spacing:.5px;font-weight:500;margin-bottom:10px;height:16px;text-align:center;}
+  .nav-dots{display:flex;gap:10px;margin-bottom:18px;align-items:center;}
+  .dot-btn{width:10px;height:10px;border-radius:50%;background:#b0ccc9;border:none;cursor:pointer;transition:all .25s;padding:0;}
+  .dot-btn.active{background:var(--teal);width:28px;border-radius:5px;}
 
-                    <h3>Modules</h3>
-                    <div class="module-grid">
-                        <div class="module-card active">
-                            <div class="mod-icon">🖋️</div>
-                            <span>Grammar</span>
-                        </div>
-                        <div class="module-card">
-                            <div class="mod-icon">📖</div>
-                            <span>Vocabulary</span>
-                        </div>
-                        <div class="module-card">
-                            <div class="mod-icon">🌐</div>
-                            <span>Culture</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <nav class="tab-bar">
-                    <span class="active">🏠</span>
-                    <span>🔗</span>
-                    <span>⚙️</span>
-                </nav>
-            </div>
-        </div>
+  /* ── Phone shell ── */
+  .phone-shell{
+    width:320px;height:672px;
+    background:#fff;border-radius:48px;
+    box-shadow:0 0 0 10px #1a2e2b,0 0 0 11px #0e1a17,0 32px 80px rgba(0,0,0,.35);
+    overflow:hidden;display:flex;flex-direction:column;position:relative;flex-shrink:0;
+  }
 
-        <div class="iphone-mockup">
-            <div class="screen">
-                <header>
-                    <span class="icon">〈</span>
-                    <h1>Milestones</h1>
-                    <span class="icon"></span>
-                </header>
+  /* status bar — transition matches slide duration */
+  .status-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 24px 6px;font-size:12px;font-weight:600;
+    flex-shrink:0;z-index:10;position:relative;
+    transition:background .38s cubic-bezier(.4,0,.2,1), color .38s cubic-bezier(.4,0,.2,1);
+  }
 
-                <div class="content">
-                    <div class="badge-orbit">
-                        <div class="center-badge">🏆</div>
-                        <div class="orbit-item">⭐</div>
-                        <div class="orbit-item">☕</div>
-                    </div>
+  /* ── Track: must fill remaining height ── */
+  .track-outer{flex:1;overflow:hidden;min-height:0;position:relative;}
+  .screens-track{
+    display:flex;flex-direction:row;
+    height:100%;                           /* ← fill track-outer */
+    transition:transform .38s cubic-bezier(.4,0,.2,1);
+    will-change:transform;
+  }
+  .screen{width:320px;height:100%;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
 
-                    <h3>Historical achievement</h3>
-                    <div class="chart-container">
-                        <div class="bar" style="width: 90%;"><span>2024</span></div>
-                        <div class="bar" style="width: 60%;"><span>2000</span></div>
-                        <div class="bar" style="width: 50%;"><span>1986</span></div>
-                        <div class="bar" style="width: 45%;"><span>1986</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  /* nav arrows */
+  .arrows{display:flex;gap:16px;margin-top:18px;}
+  .arr-btn{width:44px;height:44px;border-radius:50%;border:2px solid var(--teal);background:#fff;color:var(--teal);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+  .arr-btn:hover{background:var(--teal);color:#fff;}
+  .arr-btn:disabled{border-color:#ccc;color:#ccc;cursor:default;}
+  .arr-btn:hover:disabled{background:#fff;}
 
-        <div class="iphone-mockup">
-            <div class="screen">
-                <header>
-                    <span class="icon">〈</span>
-                    <h1>Goal Streak</h1>
-                    <span class="icon"></span>
-                </header>
+  /* ── S1 Splash ── */
+  .s1{background:var(--navy);align-items:center;justify-content:center;gap:18px;padding:32px 28px;}
+  .s1-logo{width:80px;height:80px;background:var(--teal);border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 8px rgba(42,157,143,.2);}
+  .s1-logo svg{width:46px;height:46px;}
+  .s1-name{font-family:'Fraunces',serif;font-size:26px;color:#fff;text-align:center;}
+  .s1-sub{font-size:13px;color:#90B8B4;text-align:center;line-height:1.6;}
+  .s1-btn{background:var(--teal);color:#fff;border-radius:50px;padding:14px 40px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(42,157,143,.4);border:none;transition:all .18s;width:80%;}
+  .s1-btn:hover{background:var(--teal-d);}
+  .s1-link{font-size:12px;color:#90B8B4;cursor:pointer;}
+  .s1-link span{color:var(--teal-l);}
 
-                <div class="content align-center">
-                    <div class="streak-number">3</div>
-                    <h3>Goal Streak</h3>
-                    <p class="sub-text">The weekly progress</p>
-                    
-                    <div class="mini-graph">
-                        <div class="graph-placeholder">📈 Weekly Stats</div>
-                    </div>
+  /* ── S2 Account ── */
+  .s2{background:#fff;padding:28px 24px;gap:12px;}
+  .s2-title{font-family:'Fraunces',serif;font-size:22px;color:var(--text);text-align:center;}
+  .s2-sub{font-size:12px;color:var(--muted);text-align:center;margin-top:-6px;}
+  .field{display:flex;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:14px;padding:11px 14px;font-size:13px;color:#aaa;}
+  .field input{border:none;outline:none;flex:1;font-size:13px;color:var(--text);background:transparent;}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#888;}
+  .toggle-row a{color:var(--teal);text-decoration:none;}
+  .tog{width:36px;height:20px;background:var(--teal);border-radius:50px;position:relative;cursor:pointer;flex-shrink:0;}
+  .tog::after{content:'';position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%;}
+  .reg-btn{background:var(--teal);color:#fff;border-radius:50px;text-align:center;padding:14px;font-size:14px;font-weight:600;cursor:pointer;border:none;width:100%;margin-top:4px;transition:all .18s;}
+  .reg-btn:hover{background:var(--teal-d);}
+  .s2-link{font-size:12px;color:#aaa;text-align:center;cursor:pointer;}
+  .s2-link span{color:var(--teal);}
 
-                    <button class="btn-commit">Stay Committed</button>
-                </div>
-            </div>
-        </div>
+  /* ── S3 Subject ── */
+  .s3{background:#fff;padding:20px 22px;gap:12px;}
+  .ob-back{font-size:20px;color:var(--teal);cursor:pointer;width:fit-content;}
+  .ob-dots{display:flex;gap:6px;}
+  .ob-dot{width:22px;height:5px;border-radius:4px;background:var(--border);}
+  .ob-dot.a{background:var(--teal);}
+  .ob-q{font-size:15px;font-weight:600;color:var(--text);}
+  .ob-hint{font-size:11px;color:var(--muted);margin-top:-6px;}
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{padding:8px 14px;border-radius:50px;font-size:11px;font-weight:500;border:1.5px solid var(--border);color:#555;background:#fafafa;cursor:pointer;transition:all .18s;user-select:none;}
+  .chip.sel{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .ob-section{font-size:12px;font-weight:600;color:var(--text);margin-top:4px;}
+  .cont-btn{margin-top:auto;background:var(--teal);color:#fff;border-radius:50px;text-align:center;padding:13px;font-size:13px;font-weight:600;cursor:pointer;border:none;width:100%;transition:all .18s;}
+  .cont-btn:hover{background:var(--teal-d);}
+
+  /* ── S4 Level ── */
+  .s4{background:#fff;padding:20px 22px;gap:14px;}
+  .level-card{border:1.5px solid var(--border);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s;}
+  .level-card:hover{border-color:var(--teal-l);}
+  .level-card.sel{border-color:var(--teal);background:var(--teal-bg);}
+  .level-ico{font-size:24px;}
+  .level-info{flex:1;}
+  .level-name{font-size:13px;font-weight:600;color:var(--text);}
+  .level-desc{font-size:11px;color:var(--muted);}
+  .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .2s;}
+  .radio.sel{border-color:var(--teal);background:var(--teal);}
+
+  /* ── S5 Calendar ── */
+  .s5{background:#fff;padding:18px;gap:10px;overflow:hidden;}
+  .cal-header{display:flex;justify-content:space-between;align-items:center;}
+  .cal-month{font-size:16px;font-weight:600;color:var(--text);}
+  .cal-navs{display:flex;gap:10px;font-size:16px;color:var(--teal);cursor:pointer;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-day-label{font-size:9px;color:var(--muted);text-align:center;font-weight:600;padding-bottom:2px;}
+  .cal-day{font-size:10px;text-align:center;width:32px;height:32px;line-height:32px;border-radius:50%;color:var(--text);margin:0 auto;}
+  .cal-day.today{background:var(--teal);color:#fff;font-weight:700;}
+  .cal-day.done{background:var(--teal-bg);color:var(--teal);font-weight:600;}
+  .cal-day.rest{color:#ccc;}
+  .week-lbl{font-size:11px;font-weight:600;color:var(--text);}
+  .task-row{display:flex;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:14px;padding:10px 12px;cursor:pointer;transition:border-color .18s;}
+  .task-row:hover{border-color:var(--teal-l);}
+  .task-row.today-row{border-color:var(--teal);background:var(--teal-bg);}
+  .task-ico{font-size:18px;}
+  .task-info{flex:1;}
+  .task-name{font-size:11px;font-weight:600;color:var(--text);}
+  .task-meta{font-size:10px;color:var(--muted);}
+  .task-badge{font-size:10px;padding:4px 10px;border-radius:50px;background:var(--teal);color:#fff;font-weight:600;}
+  .task-badge.done{background:var(--teal-bg);color:var(--teal);}
+  .task-badge.rest{background:#f1f1f1;color:#aaa;}
+
+  /* ── S6 Today ── */
+  .s6{background:#F7FCFB;padding:20px 18px;gap:12px;}
+  .greet-sub{font-size:12px;color:var(--teal);font-weight:500;}
+  .greet-name{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--text);line-height:1.2;}
+  .streak-pill{background:var(--gold);color:#7A5C00;padding:6px 14px;border-radius:50px;font-size:11px;font-weight:600;align-self:flex-start;}
+  .today-card{background:var(--teal-d);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:8px;}
+  .tc-label{font-size:10px;color:var(--teal-l);font-weight:500;}
+  .tc-title{font-family:'Fraunces',serif;font-size:20px;color:#fff;line-height:1.2;}
+  .tc-meta{display:flex;gap:10px;}
+  .tc-meta span{font-size:10px;color:#a0d4cf;}
+  .start-btn{background:#fff;color:var(--teal-d);border-radius:50px;padding:11px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;border:none;margin-top:4px;transition:all .18s;}
+  .start-btn:hover{background:var(--teal-l);}
+  .week-mini{font-size:11px;font-weight:600;color:var(--text);}
+  .week-dots{display:flex;gap:8px;align-items:center;}
+  .wd{width:32px;height:32px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:#aaa;flex-shrink:0;}
+  .wd.done{background:var(--teal);color:#fff;}
+  .wd.today2{background:var(--navy);color:#fff;}
+  .wd.rest2{background:#f1f1f1;color:#ccc;}
+
+  /* ── S7 Question ── */
+  .s7{background:#F7FCFB;padding:16px 18px;gap:10px;overflow:hidden;}
+  .sq-topbar{display:flex;align-items:center;gap:10px;}
+  .sq-back-btn{font-size:18px;color:var(--teal);cursor:pointer;background:none;border:none;}
+  .sq-prog-wrap{flex:1;display:flex;flex-direction:column;gap:4px;}
+  .sq-prog-bar{height:5px;background:var(--border);border-radius:4px;}
+  .sq-prog-fill{height:5px;background:var(--teal);border-radius:4px;width:35%;}
+  .sq-prog-lbl{font-size:9px;color:var(--muted);text-align:right;}
+  .sq-timer{font-size:11px;color:var(--navy);font-weight:600;flex-shrink:0;}
+  .sq-tags{display:flex;gap:6px;flex-wrap:wrap;}
+  .sq-tag{font-size:9px;padding:4px 10px;border-radius:50px;border:1px solid var(--border);color:var(--muted);background:#fff;}
+  .sq-tag.t{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .sq-q{font-size:11px;color:var(--text);line-height:1.6;background:#fff;border-radius:14px;padding:12px 14px;border:1px solid var(--border);}
+  .sq-diagram{background:#fff;border-radius:14px;border:1px solid var(--border);padding:8px;display:flex;align-items:center;justify-content:center;}
+  .sq-diagram svg{width:100%;max-height:100px;}
+  .sq-choices{display:flex;flex-direction:column;gap:6px;}
+  .sq-choice{font-size:11px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-weight:500;cursor:pointer;transition:all .18s;user-select:none;}
+  .sq-choice:hover{border-color:var(--teal-l);background:var(--teal-bg);}
+  .sq-choice.sel{border-color:var(--teal);background:var(--teal);color:#fff;font-weight:600;}
+  .sq-next{margin-top:auto;background:var(--navy);color:#fff;border-radius:50px;text-align:center;padding:12px;font-size:13px;font-weight:600;cursor:pointer;border:none;width:100%;transition:all .18s;}
+  .sq-next:hover{background:#1a3340;}
+
+  /* ── S8 Explanation ── */
+  .s8{background:#fff;padding:16px 18px;gap:11px;overflow:hidden;}
+  .se-banner{border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:12px;background:var(--teal);}
+  .se-icon{font-size:20px;color:#fff;font-weight:700;}
+  .se-result-lbl{font-size:13px;font-weight:700;color:#fff;}
+  .se-result-sub{font-size:10px;color:var(--teal-l);}
+  .se-pts{margin-left:auto;font-family:'Fraunces',serif;font-size:26px;color:#fff;font-weight:600;}
+  .se-sec{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+  .se-ans-row{display:flex;align-items:center;gap:12px;}
+  .se-badge{width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+  .se-ans-text{font-size:15px;font-weight:600;color:var(--text);}
+  .se-check{margin-left:auto;font-size:16px;color:var(--teal);}
+  .se-explain{font-size:10px;color:var(--text);line-height:1.65;background:var(--teal-bg);border-radius:12px;padding:12px 14px;border-left:3px solid var(--teal);}
+  .se-skill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .se-skill{font-size:9px;padding:5px 10px;border-radius:50px;background:#f0f0f0;color:#555;font-weight:500;}
+  .se-save{font-size:12px;padding:10px 18px;border-radius:50px;border:none;background:var(--teal-bg);color:var(--teal-d);font-weight:600;cursor:pointer;transition:all .18s;}
+  .se-save:hover{background:var(--teal);color:#fff;}
+  .se-continue{margin-top:auto;background:var(--navy);color:#fff;border-radius:50px;text-align:center;padding:12px;font-size:13px;font-weight:600;cursor:pointer;border:none;width:100%;transition:all .18s;}
+  .se-continue:hover{background:#1a3340;}
+</style>
+
+<div style="display:flex;flex-direction:column;align-items:center;padding:24px 0 32px;">
+  <div class="screen-label" id="scrLabel">Splash</div>
+  <div class="nav-dots" id="navDots"></div>
+
+  <div class="phone-shell">
+    <div class="status-bar" id="sbar">
+      <span>19:02</span><span style="font-size:11px;">▲▲ ◆</span>
     </div>
+    <div class="track-outer">
+      <div class="screens-track" id="track">
 
-</body>
-</html>
+        <!-- S1 -->
+        <div class="screen s1">
+          <div class="s1-logo">
+            <svg viewBox="0 0 46 46" fill="none">
+              <rect x="6" y="8" width="20" height="26" rx="4" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+              <path d="M11 16h12M11 21h8M11 26h9" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="33" cy="31" r="10" fill="#E9C46A"/>
+              <path d="M29 31l3 3 6-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="s1-name">ACT Lab</div>
+          <div class="s1-sub">Smart practice questions<br>for private tutors</div>
+          <button class="s1-btn" onclick="goTo(1)">Get started →</button>
+          <div class="s1-link">Already have an account? <span>Log in</span></div>
+        </div>
+
+        <!-- S2 -->
+        <div class="screen s2">
+          <div class="s2-title">Create account</div>
+          <div class="s2-sub">Join ACT Lab</div>
+          <div class="field"><span style="font-size:15px;">👤</span><input placeholder="Full name"/></div>
+          <div class="field"><span style="font-size:15px;">✉️</span><input placeholder="Email address" type="email"/></div>
+          <div class="field"><span style="font-size:15px;">🔒</span><input placeholder="Password" type="password"/></div>
+          <div class="field"><span style="font-size:15px;">🔒</span><input placeholder="Confirm password" type="password"/></div>
+          <div class="toggle-row"><span>I agree to the <a>Terms</a></span><div class="tog"></div></div>
+          <button class="reg-btn" onclick="goTo(2)">Register</button>
+          <div class="s2-link">Already have an account? <span onclick="goTo(0)">Log in</span></div>
+        </div>
+
+        <!-- S3 -->
+        <div class="screen s3">
+          <div class="ob-back" onclick="goTo(1)">←</div>
+          <div class="ob-dots"><div class="ob-dot a"></div><div class="ob-dot a"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+          <div class="ob-q">Your focus subject</div>
+          <div class="ob-hint">select all that apply</div>
+          <div class="chip-group">
+            <div class="chip sel" onclick="toggleChip(this)">Math</div>
+            <div class="chip" onclick="toggleChip(this)">English</div>
+            <div class="chip" onclick="toggleChip(this)">Reading</div>
+            <div class="chip sel" onclick="toggleChip(this)">Science</div>
+            <div class="chip" onclick="toggleChip(this)">Writing</div>
+          </div>
+          <div class="ob-section">Filter depth</div>
+          <div class="chip-group">
+            <div class="chip sel" onclick="toggleChip(this)">Geometry</div>
+            <div class="chip" onclick="toggleChip(this)">Algebra</div>
+            <div class="chip" onclick="toggleChip(this)">Functions</div>
+            <div class="chip" onclick="toggleChip(this)">Statistics</div>
+          </div>
+          <div class="ob-section">Student level</div>
+          <div class="chip-group">
+            <div class="chip" onclick="toggleChip(this)">Beginner</div>
+            <div class="chip sel" onclick="toggleChip(this)">Intermediate</div>
+            <div class="chip" onclick="toggleChip(this)">Advanced</div>
+          </div>
+          <button class="cont-btn" onclick="goTo(3)">Continue →</button>
+        </div>
+
+        <!-- S4 -->
+        <div class="screen s4">
+          <div class="ob-back" onclick="goTo(2)">←</div>
+          <div class="ob-dots"><div class="ob-dot a"></div><div class="ob-dot a"></div><div class="ob-dot a"></div><div class="ob-dot a"></div><div class="ob-dot"></div></div>
+          <div class="ob-q">Session length</div>
+          <div class="ob-hint">includes warm-up + review</div>
+          <div class="level-card" onclick="selectLevel(this)">
+            <div class="level-ico">⚡</div>
+            <div class="level-info"><div class="level-name">Quick drill</div><div class="level-desc">15–25 min · 10 questions</div></div>
+            <div class="radio"></div>
+          </div>
+          <div class="level-card sel" onclick="selectLevel(this)">
+            <div class="level-ico">📚</div>
+            <div class="level-info"><div class="level-name">Standard session</div><div class="level-desc">30–45 min · 20 questions</div></div>
+            <div class="radio sel"></div>
+          </div>
+          <div class="level-card" onclick="selectLevel(this)">
+            <div class="level-ico">🏆</div>
+            <div class="level-info"><div class="level-name">Deep practice</div><div class="level-desc">60–75 min · full section</div></div>
+            <div class="radio"></div>
+          </div>
+          <button class="cont-btn" onclick="goTo(4)">Continue →</button>
+        </div>
+
+        <!-- S5 -->
+        <div class="screen s5">
+          <div class="cal-header"><div class="cal-month">January 2026</div><div class="cal-navs"><span>‹</span><span>›</span></div></div>
+          <div class="cal-grid">
+            <div class="cal-day-label">Su</div><div class="cal-day-label">Mo</div><div class="cal-day-label">Tu</div><div class="cal-day-label">We</div><div class="cal-day-label">Th</div><div class="cal-day-label">Fr</div><div class="cal-day-label">Sa</div>
+            <div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div>
+            <div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div>
+            <div class="cal-day">5</div><div class="cal-day done">6</div><div class="cal-day rest">7</div>
+            <div class="cal-day done">8</div><div class="cal-day rest">9</div><div class="cal-day done">10</div><div class="cal-day">11</div>
+            <div class="cal-day">12</div><div class="cal-day done">13</div><div class="cal-day rest">14</div>
+            <div class="cal-day today">15</div><div class="cal-day done">16</div><div class="cal-day done">17</div><div class="cal-day rest">18</div>
+            <div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day">21</div>
+          </div>
+          <div class="week-lbl">This week — Jan 13–19</div>
+          <div class="task-row"><div class="task-ico">📐</div><div class="task-info"><div class="task-name">Math – Geometry</div><div class="task-meta">20 min · 12 q</div></div><div class="task-badge done">Done</div></div>
+          <div class="task-row"><div class="task-ico">😴</div><div class="task-info"><div class="task-name">Rest day</div><div class="task-meta">Recovery</div></div><div class="task-badge rest">Rest</div></div>
+          <div class="task-row today-row" onclick="goTo(5)"><div class="task-ico">📖</div><div class="task-info"><div class="task-name">Reading – Inference</div><div class="task-meta">35 min · Passage set</div></div><div class="task-badge">Today</div></div>
+        </div>
+
+        <!-- S6 -->
+        <div class="screen s6">
+          <div class="greet-sub">Good morning, Sarah 🌿</div>
+          <div class="greet-name">Week 3 of your ACT plan</div>
+          <div class="streak-pill">🔥 9-day streak — keep going!</div>
+          <div class="today-card">
+            <div class="tc-label">Wednesday · Reading</div>
+            <div class="tc-title">Inference &amp;<br>Main Idea</div>
+            <div class="tc-meta"><span>⏱ 35 min</span><span>📄 2 passages</span><span>❓ 20 q</span></div>
+            <button class="start-btn" onclick="goTo(6)">Start session →</button>
+          </div>
+          <div class="week-mini">This week</div>
+          <div class="week-dots">
+            <div class="wd done">Mo</div><div class="wd rest2">Tu</div><div class="wd today2">15</div><div class="wd done">Th</div><div class="wd rest2">Fr</div><div class="wd">Sa</div><div class="wd">Su</div>
+          </div>
+          <div class="week-lbl" style="margin-top:2px;">Coming up</div>
+          <div class="task-row"><div class="task-ico">🔢</div><div class="task-info"><div class="task-name">Science – Data Analysis</div><div class="task-meta">Thu · 30 min</div></div></div>
+        </div>
+
+        <!-- S7 -->
+        <div class="screen s7">
+          <div class="sq-topbar">
+            <button class="sq-back-btn" onclick="goTo(5)">←</button>
+            <div class="sq-prog-wrap">
+              <div class="sq-prog-bar"><div class="sq-prog-fill"></div></div>
+              <div class="sq-prog-lbl">7 / 20</div>
+            </div>
+            <div class="sq-timer" id="qtimer">⏱ 18:42</div>
+          </div>
+          <div class="sq-tags"><span class="sq-tag">Math</span><span class="sq-tag t">Geometry</span><span class="sq-tag">Intermediate</span></div>
+          <div class="sq-q">In the figure below, triangle <em>ABC</em> is inscribed in a circle with center <em>O</em>. If arc BC = 110°, what is the measure of ∠BAC?</div>
+          <div class="sq-diagram">
+            <svg viewBox="0 0 130 100" fill="none">
+              <circle cx="65" cy="50" r="40" stroke="#D2EEEC" stroke-width="1.5"/>
+              <circle cx="65" cy="50" r="3.5" fill="#2A9D8F"/>
+              <text x="65" y="44" font-size="8" fill="#264653" text-anchor="middle" font-family="serif">O</text>
+              <polygon points="65,12 95,80 35,80" fill="#E8F7F6" stroke="#2A9D8F" stroke-width="1.5" stroke-linejoin="round"/>
+              <text x="65" y="9" font-size="8" fill="#264653" text-anchor="middle" font-family="serif" font-weight="bold">A</text>
+              <text x="100" y="86" font-size="8" fill="#264653" text-anchor="middle" font-family="serif" font-weight="bold">B</text>
+              <text x="30" y="86" font-size="8" fill="#264653" text-anchor="middle" font-family="serif" font-weight="bold">C</text>
+              <path d="M35,80 A40,40 0 0,0 95,80" stroke="#E9C46A" stroke-width="2.5" fill="none"/>
+              <text x="65" y="97" font-size="7.5" fill="#BA7517" text-anchor="middle">arc BC = 110°</text>
+            </svg>
+          </div>
+          <div class="sq-choices">
+            <div class="sq-choice" onclick="pickChoice(this)">A &nbsp; 35°</div>
+            <div class="sq-choice" onclick="pickChoice(this)">B &nbsp; 45°</div>
+            <div class="sq-choice" onclick="pickChoice(this)">C &nbsp; 55°</div>
+            <div class="sq-choice" onclick="pickChoice(this)">D &nbsp; 110°</div>
+          </div>
+          <button class="sq-next" onclick="goTo(7)">Check answer →</button>
+        </div>
+
+        <!-- S8 -->
+        <div class="screen s8">
+          <div class="se-banner">
+            <div class="se-icon">✓</div>
+            <div><div class="se-result-lbl">Correct!</div><div class="se-result-sub">+12 pts · streak ×3</div></div>
+            <div class="se-pts">+36</div>
+          </div>
+          <div class="se-sec">Your answer</div>
+          <div class="se-ans-row"><div class="se-badge">C</div><span class="se-ans-text">55°</span><span class="se-check">✓</span></div>
+          <div class="se-sec">Explanation</div>
+          <div class="se-explain">The <strong>Inscribed Angle Theorem</strong> states that an inscribed angle equals half the central angle subtending the same arc.<br><br>arc BC = 110° → ∠BAC = 110° ÷ 2 = <strong>55°</strong></div>
+          <div class="se-skill-row"><span class="se-skill">📐 Inscribed Angle</span><span class="se-skill">⭕ Circle Theorems</span></div>
+          <button class="se-save">＋ Save to playlist</button>
+          <button class="se-continue" onclick="goTo(4)">Back to schedule →</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="arrows">
+    <button class="arr-btn" id="btnPrev" onclick="goTo(cur-1)" disabled>‹</button>
+    <button class="arr-btn" id="btnNext" onclick="goTo(cur+1)">›</button>
+  </div>
+</div>
+
+<script>
+const SCREENS=[
+  {label:'Splash',              sbBg:'#264653',sbClr:'#90B8B4'},
+  {label:'Create Account',      sbBg:'#ffffff',sbClr:'#333333'},
+  {label:'Subject Selection',   sbBg:'#ffffff',sbClr:'#333333'},
+  {label:'Session Length',      sbBg:'#ffffff',sbClr:'#333333'},
+  {label:'Schedule',            sbBg:'#ffffff',sbClr:'#333333'},
+  {label:'Today\'s Session',    sbBg:'#F7FCFB',sbClr:'#333333'},
+  {label:'Question',            sbBg:'#F7FCFB',sbClr:'#333333'},
+  {label:'Answer & Explanation',sbBg:'#ffffff',sbClr:'#333333'},
+];
+let cur=0;
+const track=document.getElementById('track');
+const sb=document.getElementById('sbar');
+const dotsEl=document.getElementById('navDots');
+
+SCREENS.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.className='dot-btn'+(i===0?' active':'');
+  b.onclick=()=>goTo(i);
+  dotsEl.appendChild(b);
+});
+
+sb.style.background=SCREENS[0].sbBg;
+sb.style.color=SCREENS[0].sbClr;
+
+function goTo(n){
+  if(n<0||n>=SCREENS.length||n===cur)return;
+  cur=n;
+  const s=SCREENS[cur];
+  track.style.transform=`translateX(${-cur*320}px)`;
+  sb.style.background=s.sbBg;
+  sb.style.color=s.sbClr;
+  document.getElementById('scrLabel').textContent=s.label;
+  document.querySelectorAll('.dot-btn').forEach((b,i)=>b.classList.toggle('active',i===cur));
+  document.getElementById('btnPrev').disabled=cur===0;
+  document.getElementById('btnNext').disabled=cur===SCREENS.length-1;
+}
+
+function toggleChip(el){el.classList.toggle('sel');}
+function selectLevel(el){
+  document.querySelectorAll('.level-card').forEach(c=>{c.classList.remove('sel');c.querySelector('.radio').classList.remove('sel');});
+  el.classList.add('sel');el.querySelector('.radio').classList.add('sel');
+}
+function pickChoice(el){
+  document.querySelectorAll('.sq-choice').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+let timerSec=1122;
+setInterval(()=>{
+  if(cur===6){timerSec=Math.max(0,timerSec-1);const m=String(Math.floor(timerSec/60)).padStart(2,'0');const s=String(timerSec%60).padStart(2,'0');document.getElementById('qtimer').textContent='⏱ '+m+':'+s;}
+},1000);
+</script>
